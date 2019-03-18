@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-    import {Component, Prop, Vue} from 'vue-property-decorator'
+    import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
 
     enum PlayerStates {
         unstarted = -1,
@@ -18,7 +18,7 @@
         videoCued = 5
     }
 
-    const PLAY_MARGIN: number = 10; // Start/End seconds that won't be played during random selection
+    const PLAY_MARGIN: number = 30; // Start/End seconds that won't be played during random selection
 
     const randBetween = (min: number, max: number): number => {
         return Math.floor(Math.random() * (max - min + 1) + min);
@@ -27,7 +27,7 @@
     @Component
     export default class VideoPlayer extends Vue {
         @Prop() private videoId!: string;
-        private revealPoint: number = -1;
+        @Prop() private revealPoint!: number;
 
         private showVideo: boolean = false;
         private videoDuration: number = 0;
@@ -35,13 +35,18 @@
         private async onReady(): Promise<void> {
             await this.getDuration();
             await this.player.setPlaybackQuality('small');
-
             this.$emit('ready');
+            console.log("READY!");
         }
 
+        @Watch('videoId')
         private async getDuration(): Promise<number> {
-            this.videoDuration = await this.player.getDuration();
+            console.log('Getting duration again');
+            do {
+                this.videoDuration = await this.player.getDuration();
+            } while(! this.videoDuration);
 
+            console.log('Got it!');
             return this.videoDuration;
         }
 
@@ -55,40 +60,40 @@
         }
 
         public async playRandomPoint(): Promise<void> {
-            const isPlaying: boolean = await this.isPlaying();
+            await this.player.pauseVideo();
 
-            if (!isPlaying) {
-                await this.player.playVideo();
-            }
-
-            const playSpeed: number = Math.random() < 0.5 ? 0.25 : 2;
+            const playSpeed: number = 0.25;
             await this.player.setPlaybackRate(playSpeed);
+            console.log(this.videoDuration);
             const randomPoint: number = randBetween(PLAY_MARGIN, this.videoDuration - PLAY_MARGIN);
             await this.player.seekTo(randomPoint, true);
+            await this.player.playVideo();
             await this.awaitForVideoToPlay();
         }
 
         public async awaitForVideoToPlay(): Promise<void> {
+            let waitCount: number = 0;
             do {
-                await new Promise((resolve) => setTimeout(resolve, 500));
+                await new Promise((resolve) => setTimeout(resolve, 750));
+                if (waitCount >= 4) {
+                    await this.playRandomPoint();
+                    waitCount = 0;
+                }
+                waitCount++;
+                console.log('Waiting', waitCount);
             } while (await this.player.getPlayerState() !== PlayerStates.playing);
         }
 
         public async reveal(): Promise<void> {
             await this.player.pauseVideo();
+
             await this.player.setVolume(0);
-            const effectiveRevealPoint = (this.revealPoint === -1)
-                ? randBetween(PLAY_MARGIN, this.videoDuration - PLAY_MARGIN)
-                : this.revealPoint;
-
             await this.player.setPlaybackRate(1);
-
-            if (this.revealPoint === -1) {
-                await this.player.seekTo(effectiveRevealPoint, true);
-            }
-
+            await this.player.seekTo(this.revealPoint, true);
+            console.log('Reveal Point', this.revealPoint);
             await this.player.playVideo();
             await this.awaitForVideoToPlay();
+
             this.volumeFadeIn();
             this.showVideo = true;
             this.$emit('video-revealed');
