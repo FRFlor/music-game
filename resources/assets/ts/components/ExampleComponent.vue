@@ -1,6 +1,8 @@
 <template>
     <div>
         <h1>Vue Typescript is Working!</h1>
+        <v-btn>Vuetify is Working!</v-btn>
+        <v-btn icon><v-icon>fab fa-vuejs</v-icon></v-btn>
     </div>
 </template>
 
