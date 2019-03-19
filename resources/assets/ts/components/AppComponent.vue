@@ -195,11 +195,11 @@
         }
 
         private get movies(): string[] {
-            return QUESTION_LIST.map((question: VideoQuestion) => question.movie);
+            return QUESTION_LIST.map((question: VideoQuestion) => question.movie).sort();
         }
 
         private get songs(): string[] {
-            return QUESTION_LIST.map((question: VideoQuestion) => question.song);
+            return QUESTION_LIST.map((question: VideoQuestion) => question.song).sort();
         }
 
         private get resultMessage(): string {
