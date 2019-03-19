@@ -19,7 +19,7 @@
     @Component
     export default class GameTimer extends Vue {
         @Prop() private value!: number;
-        @Prop() private success!: boolean;
+        @Prop({default: true}) private success!: boolean;
 
         private interval: any;
         private startValue: number = 0;

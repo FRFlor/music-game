@@ -2,6 +2,11 @@
     <div id="app">
         <v-app id="musicgame">
             <v-container app fluid>
+                <v-layout>
+                    <v-flex v-text="`Your score: ${playerPoints}`"
+                            class="headline light-blue--text text--darken-1"></v-flex>
+                </v-layout>
+
                 <v-layout wrap>
                     <v-flex xs12 sm4>
                         <v-autocomplete
@@ -15,9 +20,22 @@
                         ></v-autocomplete>
                     </v-flex>
 
+                    <v-flex xs12 order-sm-4>
+                        <div v-if="timerSeconds === 0">
+                            <div class="text-center"
+                                 v-text="resultMessage"
+                                 :class="songIsRight || movieIsRight ? 'green--text' : 'red--text'"></div>
+
+                            <div class="text-center"
+                                 :class="songIsRight || movieIsRight ? 'green--text' : 'red--text'">
+                                {{question.movie}} - {{question.song}}
+                            </div>
+                        </div>
+                    </v-flex>
+
                     <v-flex xs12 sm4>
                         <game-timer ref="timer"
-                                    class="justify-center"
+                                    class="justify-center my-3"
                                     v-model="timerSeconds"
                                     :success="songIsRight || movieIsRight"
                                     @time-is-up="revealAnswer">
@@ -53,7 +71,8 @@
     import {Component, Vue} from 'vue-property-decorator'
     import VideoPlayer from "./VideoPlayer.vue";
     import GameTimer from "./GameTimer.vue";
-// :color="timerSeconds > 0 ? 'grey' :  movieIsRight ? 'green' : 'red'"
+
+    // :color="timerSeconds > 0 ? 'grey' :  movieIsRight ? 'green' : 'red'"
     interface VideoQuestion {
         id: string,
         song: string,
@@ -156,6 +175,14 @@
 
         private get songs(): string[] {
             return QUESTION_LIST.map((question: VideoQuestion) => question.song);
+        }
+
+        private get resultMessage(): string {
+            return (this.movieIsRight && this.songIsRight)
+                ? "Perfect! Well Done!"
+                : this.movieIsRight || this.songIsRight
+                    ? "Good!"
+                    : "Sorry! Better luck next time!";
         }
     }
 </script>
