@@ -2,13 +2,13 @@
     <div id="app">
         <v-app id="musicgame">
             <v-container app fluid class="app-container">
-                <v-layout>
-                    <v-flex v-text="`Your score: ${playerPoints}`"
+                <v-layout wrap row>
+                    <v-flex xs12 aria-describedby="Scoreboard"
+                            v-text="`Your score: ${playerPoints}`"
                             class="headline light-blue--text text--darken-1 mb-4"></v-flex>
                 </v-layout>
-
-                <v-layout wrap>
-                    <v-flex xs12 sm4>
+                <v-layout wrap row>
+                    <v-flex xs12 sm4 aria-describedby="Movie Answer Input">
                         <v-autocomplete
                                 v-model="movieAnswer"
                                 :items="movies"
@@ -20,20 +20,7 @@
                         ></v-autocomplete>
                     </v-flex>
 
-                    <v-flex xs12 order-sm-4>
-                        <div v-if="timerSeconds === 0">
-                            <div class="text-center"
-                                 v-text="resultMessage"
-                                 :class="songIsRight || movieIsRight ? 'green--text' : 'red--text'"></div>
-
-                            <div class="text-center"
-                                 :class="songIsRight || movieIsRight ? 'green--text' : 'red--text'">
-                                {{question.movie}} - {{question.song}}
-                            </div>
-                        </div>
-                    </v-flex>
-
-                    <v-flex xs12 sm4>
+                    <v-flex xs12 sm4 aria-describedby="Timer and Video">
                         <game-timer ref="timer"
                                     class="justify-center my-3"
                                     v-model="timerSeconds"
@@ -49,7 +36,21 @@
                         </game-timer>
                     </v-flex>
 
-                    <v-flex xs12 sm4>
+                    <v-flex xs12 order-sm4 aria-describedby="Result Message">
+                        <div class="text-center">MESSAGE</div>
+                        <div v-show="timerSeconds === 0">
+                            <div class="text-center"
+                                 v-text="resultMessage"
+                                 :class="songIsRight || movieIsRight ? 'green--text' : 'red--text'"></div>
+
+                            <div class="text-center"
+                                 :class="songIsRight || movieIsRight ? 'green--text' : 'red--text'">
+                                {{question.movie}} - {{question.song}}
+                            </div>
+                        </div>
+                    </v-flex>
+
+                    <v-flex xs12 sm4 aria-describedby="Song Answer Input">
                         <v-autocomplete
                                 v-model="songAnswer"
                                 :items="songs"
@@ -60,8 +61,9 @@
                                 :error="timerSeconds === 0 && ! songIsRight"
                         ></v-autocomplete>
                     </v-flex>
-
-                    <v-flex xs12>
+                </v-layout>
+                <v-layout wrap row>
+                    <v-flex xs12 aria-describedby="Skip to Result">
                         <div class="text-center mt-5">
                             <v-btn color="light-blue darken-1"
                                    class="justify-center"
