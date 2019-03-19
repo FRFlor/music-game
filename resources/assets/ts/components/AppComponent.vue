@@ -1,22 +1,22 @@
 <template>
     <div id="app">
         <v-app id="musicgame">
-            <v-container app fluid>
+            <v-container app fluid class="app-container">
                 <v-layout>
                     <v-flex v-text="`Your score: ${playerPoints}`"
-                            class="headline light-blue--text text--darken-1"></v-flex>
+                            class="headline light-blue--text text--darken-1 mb-4"></v-flex>
                 </v-layout>
 
                 <v-layout wrap>
                     <v-flex xs12 sm4>
                         <v-autocomplete
-                                v-model="songAnswer"
-                                :items="songs"
-                                label="What song is this?"
-                                prepend-icon="fas fa-music"
+                                v-model="movieAnswer"
+                                :items="movies"
+                                label="What movie is this song from?"
                                 :readonly="timerSeconds === 0"
-                                :success="timerSeconds === 0 && songIsRight"
-                                :error="timerSeconds === 0 && ! songIsRight"
+                                :success="timerSeconds === 0 && movieIsRight"
+                                :error="timerSeconds === 0 && ! movieIsRight"
+                                prepend-icon="fas fa-film"
                         ></v-autocomplete>
                     </v-flex>
 
@@ -51,13 +51,13 @@
 
                     <v-flex xs12 sm4>
                         <v-autocomplete
-                                v-model="movieAnswer"
-                                :items="movies"
-                                label="What movie is this song from?"
+                                v-model="songAnswer"
+                                :items="songs"
+                                label="What song is this?"
+                                prepend-icon="fas fa-music"
                                 :readonly="timerSeconds === 0"
-                                :success="timerSeconds === 0 && movieIsRight"
-                                :error="timerSeconds === 0 && ! movieIsRight"
-                                prepend-icon="fas fa-film"
+                                :success="timerSeconds === 0 && songIsRight"
+                                :error="timerSeconds === 0 && ! songIsRight"
                         ></v-autocomplete>
                     </v-flex>
 
@@ -68,7 +68,8 @@
                                    @click="skipToAnswer"
                                    :disabled="!canSkip"
                                    outline
-                                   dark round large>Answer</v-btn>
+                                   round large>Answer
+                            </v-btn>
                         </div>
                     </v-flex>
                 </v-layout>
@@ -206,3 +207,10 @@
         }
     }
 </script>
+
+<style scoped lang="scss">
+    .app-container {
+        max-width: 920px;
+    }
+
+</style>
