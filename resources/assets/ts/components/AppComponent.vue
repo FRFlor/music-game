@@ -16,7 +16,15 @@
                         <game-timer ref="timer"
                                     class="justify-center"
                                     v-model="timerSeconds"
-                                    @time-is-up="revealAnswer"/>
+                                    @time-is-up="revealAnswer">
+                            <div v-show="timerSeconds > 0">{{timerSeconds}}s</div>
+                            <video-player ref="videoPlayer"
+                                          v-show="timerSeconds === 0"
+                                          :video-id="question.id"
+                                          :reveal-point="question.revealPoint"
+                                          @reveal-finished="getNextQuestion"
+                                          @ready="onPlayerReady"/>
+                        </game-timer>
                     </v-flex>
 
                     <v-flex xs12 sm4>
@@ -26,15 +34,6 @@
                                 label="What movie is this song from?"
                                 prepend-icon="fas fa-film"
                         ></v-autocomplete>
-                    </v-flex>
-
-                    <v-flex xs12>
-                        <video-player ref="videoPlayer"
-                                      class="justify-center"
-                                      :video-id="question.id"
-                                      :reveal-point="question.revealPoint"
-                                      @reveal-finished="getNextQuestion"
-                                      @ready="onPlayerReady"/>
                     </v-flex>
                 </v-layout>
             </v-container>

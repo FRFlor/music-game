@@ -34,7 +34,6 @@
 
         private mounted() {
             this.player.setSize(280, 210);
-            // this.player.setSize(480, 360);
         }
 
         private async onReady(): Promise<void> {
@@ -51,10 +50,6 @@
             await this.playRandomPoint();
 
             this.$emit('ready');
-        }
-
-        private async isPlaying(): Promise<boolean> {
-            return (await this.player.getPlayerState() === PlayerStates.playing);
         }
 
         private get player() {
@@ -135,8 +130,8 @@
 <style scoped lang="scss">
     .video-container {
         transition: opacity 5s ease;
+        clip-path: circle(30%);
         opacity: 0;
-        height: 0;
         &.revealed {
             opacity: 1;
             height: 210px;

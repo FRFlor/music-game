@@ -1,11 +1,13 @@
 <template>
     <v-layout>
         <v-progress-circular :value="progress"
-                             size="120"
+                             size="165"
                              width="10"
                              :color="timerColour"
                              class="title">
-            {{value}}s
+            <slot>
+
+            </slot>
         </v-progress-circular>
 
     </v-layout>
@@ -33,6 +35,7 @@
 
                     if (secondsRemaining === 0) {
                         this.$emit('time-is-up');
+                        this.progress = 100;
                     }
                 }
             }, 1000);
