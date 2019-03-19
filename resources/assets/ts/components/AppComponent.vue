@@ -141,6 +141,7 @@
         private async keepRandomJumping(): Promise<void> {
             setTimeout(async () => {
                 if (this.timerSeconds > this.hintPlaySeconds) {
+                    this.loadingMessage = "";
                     await this.player.playRandomPoint();
                     await this.keepRandomJumping();
                 }

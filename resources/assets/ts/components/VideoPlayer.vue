@@ -77,9 +77,9 @@
             let waitCount: number = 0;
             do {
                 await this.wait(750);
-                if (waitCount >= 4) {
-                    await this.playRandomPoint();
-                    waitCount = 0;
+                if (waitCount >= 6) {
+                    this.$emit('loading-message', 'Failed to play... Retrying....');
+                    return await this.playRandomPoint();
                 }
                 waitCount++;
             } while (await this.player.getPlayerState() !== PlayerStates.playing);
