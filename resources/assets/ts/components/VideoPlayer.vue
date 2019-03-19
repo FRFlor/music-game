@@ -79,6 +79,10 @@
                 await this.wait(750);
                 if (waitCount >= 5) {
                     this.$emit('loading-message', `Failing to connect... (wait of ${Math.floor(750*waitCount/1000)}s)`);
+                    if (waitCount % 10 === 0) {
+                        await this.player.playVideo();
+                        this.$emit('loading-message', 'Restarting video...');
+                    }
                 }
                 waitCount++;
             } while (await this.player.getPlayerState() !== PlayerStates.playing);
