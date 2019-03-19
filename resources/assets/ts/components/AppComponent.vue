@@ -7,6 +7,7 @@
         <video-player ref="videoPlayer"
                       :video-id="question.id"
                       :reveal-point="question.revealPoint"
+                      @reveal-finished="getNextQuestion"
                       @ready="onPlayerReady"/>
 
         <v-btn @click="questionId = 1">Change Video</v-btn>
@@ -41,31 +42,37 @@
         }
     ];
 
+    const QUESTION_TIME: number = 25;
+
     @Component({
         components: {GameTimer, VideoPlayer}
     })
     export default class AppComponent extends Vue {
 
         private questionId: number = 0;
-        private timerSeconds: number = 15;
-        private randomJumpInterval: any;
+        private timerSeconds: number = QUESTION_TIME;
 
         private get question(): VideoQuestion {
             return QuestionList[this.questionId];
         }
 
-        private revealAnswer(): void {
-            clearInterval(this.randomJumpInterval);
-            return this.player.reveal();
+        private async revealAnswer(): Promise<void> {
+            await this.player.reveal();
         }
 
         private async keepRandomJumping(): Promise<void> {
             setTimeout(async () => {
-                if (this.timerSeconds > 3) {
+                if (this.timerSeconds > this.hintPlaySeconds) {
                     await this.player.playRandomPoint();
                     await this.keepRandomJumping();
                 }
-            }, 3000)
+            }, this.hintPlaySeconds * 1000)
+        }
+
+        private getNextQuestion() {
+            this.timer.stop();
+            this.questionId = 1;
+            this.timerSeconds = QUESTION_TIME;
         }
 
         private async onPlayerReady(): Promise<void> {
@@ -80,6 +87,10 @@
 
         private get timer(): any {
             return this.$refs.timer;
+        }
+
+        private get hintPlaySeconds(): number {
+            return Math.floor(QUESTION_TIME / 4);
         }
     }
 </script>

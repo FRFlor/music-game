@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <div v-show="showVideo">
+        <div class="video-container" :class="{'revealed' : showVideo}">
             <youtube :video-id="videoId" ref="youtube" @ready="onReady"></youtube>
         </div>
     </v-container>
@@ -33,21 +33,19 @@
         private videoDuration: number = 0;
 
         private async onReady(): Promise<void> {
-            await this.getDuration();
-            await this.player.setPlaybackQuality('small');
-            this.$emit('ready');
-            console.log("READY!");
+            await this.prepareVideo();
         }
 
         @Watch('videoId')
-        private async getDuration(): Promise<number> {
-            console.log('Getting duration again');
+        private async prepareVideo(): Promise<void> {
             do {
                 this.videoDuration = await this.player.getDuration();
-            } while(! this.videoDuration);
+                await this.wait(500);
+            } while (!this.videoDuration);
+            await this.player.setVolume(100);
+            await this.playRandomPoint();
 
-            console.log('Got it!');
-            return this.videoDuration;
+            this.$emit('ready');
         }
 
         private async isPlaying(): Promise<boolean> {
@@ -59,28 +57,27 @@
             return this.$refs.youtube.player;
         }
 
-        public async playRandomPoint(): Promise<void> {
-            await this.player.pauseVideo();
+        public async stopVideo() {
+            return await this.player.stopVideo();
+        }
 
-            const playSpeed: number = 0.25;
+        public async playRandomPoint(): Promise<void> {
+            const playSpeed: number = Math.random() < 0.5 ? 0.25 : 2;
             await this.player.setPlaybackRate(playSpeed);
-            console.log(this.videoDuration);
             const randomPoint: number = randBetween(PLAY_MARGIN, this.videoDuration - PLAY_MARGIN);
             await this.player.seekTo(randomPoint, true);
-            await this.player.playVideo();
             await this.awaitForVideoToPlay();
         }
 
         public async awaitForVideoToPlay(): Promise<void> {
             let waitCount: number = 0;
             do {
-                await new Promise((resolve) => setTimeout(resolve, 750));
+                await this.wait(750);
                 if (waitCount >= 4) {
                     await this.playRandomPoint();
                     waitCount = 0;
                 }
                 waitCount++;
-                console.log('Waiting', waitCount);
             } while (await this.player.getPlayerState() !== PlayerStates.playing);
         }
 
@@ -90,24 +87,53 @@
             await this.player.setVolume(0);
             await this.player.setPlaybackRate(1);
             await this.player.seekTo(this.revealPoint, true);
-            console.log('Reveal Point', this.revealPoint);
             await this.player.playVideo();
             await this.awaitForVideoToPlay();
 
-            this.volumeFadeIn();
             this.showVideo = true;
-            this.$emit('video-revealed');
+            await this.volumeFadeIn();
+            await this.wait(10000);
+            this.showVideo = false;
+            await this.volumeFadeOut();
+            await this.wait(5000);
+            this.$emit('reveal-finished');
         }
 
-        public volumeFadeIn(): void {
-            let volume: number = 0;
-            const fadeInInterval = setInterval(async () => {
+        public async volumeFadeIn(): Promise<void> {
+            await this.volumeFade(20);
+        }
+
+        public async volumeFadeOut(): Promise<void> {
+            await this.volumeFade(-20);
+        }
+
+        private async volumeFade(delta: number): Promise<void> {
+            let volume: number = delta > 0 ? 0 : 100;
+            const fadeInterval = setInterval(async () => {
                 await this.player.setVolume(volume);
-                volume += 20;
-                if (volume > 100) {
-                    clearInterval(fadeInInterval);
+                volume += delta;
+                const shouldStop: boolean = delta > 0 ? (volume > 100) : (volume < 0);
+                if (shouldStop) {
+                    clearInterval(fadeInterval);
+                    return;
                 }
             }, 500)
         }
+
+        private async wait(ms: number): Promise<void> {
+            await new Promise((resolve) => setTimeout(resolve, ms));
+        }
     }
 </script>
+
+
+<style scoped lang="scss">
+    .video-container {
+        transition: all 5s ease;
+        opacity: 0;
+
+        &.revealed {
+            opacity: 1;
+        }
+    }
+</style>
