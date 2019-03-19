@@ -31,14 +31,17 @@
                                           v-show="timerSeconds === 0"
                                           :video-id="question.id"
                                           :reveal-point="question.revealPoint"
+                                          @loading-message="onLoadingMessage"
                                           @reveal-finished="getNextQuestion"
                                           @ready="onPlayerReady"/>
                         </game-timer>
                     </v-flex>
 
-                    <v-flex xs12 order-sm4 aria-describedby="Result Message">
-                        <div class="text-center">MESSAGE</div>
-                        <div v-show="timerSeconds === 0">
+                    <v-flex xs12 order-sm4 aria-describedby="Messages">
+                        <div v-if="loadingMessage.length > 0"
+                             class="text-center light-blue--text text--darken-4"
+                             v-text="loadingMessage"></div>
+                        <div v-else-if="timerSeconds === 0">
                             <div class="text-center"
                                  v-text="resultMessage"
                                  :class="songIsRight || movieIsRight ? 'green--text' : 'red--text'"></div>
@@ -96,6 +99,7 @@
 
         private questionId: number = 1;
         private timerSeconds: number = QUESTION_TIME;
+        private loadingMessage: string = "";
         private questionIdsUsed: number[] = [];
 
         private movieAnswer: string = "";
@@ -105,6 +109,7 @@
         private created() {
             this.questionId = Math.floor(Math.random() * QUESTION_LIST.length);
             this.questionIdsUsed.push(this.questionId);
+            this.loadingMessage = "Music selected...";
         }
 
         private get question(): VideoQuestion {
@@ -159,9 +164,14 @@
         }
 
         private async onPlayerReady(): Promise<void> {
+            this.loadingMessage = "";
             await this.player.playRandomPoint();
             this.timer.start();
             await this.keepRandomJumping();
+        }
+
+        private onLoadingMessage(message: string): void {
+            this.loadingMessage = message
         }
 
         private get movieIsRight(): boolean {

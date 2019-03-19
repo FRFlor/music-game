@@ -37,18 +37,22 @@
         }
 
         private async onReady(): Promise<void> {
+            this.$emit('loading-message', 'Youtube connection established...');
             await this.prepareVideo();
         }
 
         @Watch('videoId')
         private async prepareVideo(): Promise<void> {
+            this.$emit('loading-message', 'Getting video duration...');
             do {
                 this.videoDuration = await this.player.getDuration();
                 await this.wait(500);
             } while (!this.videoDuration);
             await this.player.setVolume(100);
+            this.$emit('loading-message', 'Switching to random start...');
             await this.playRandomPoint();
 
+            this.$emit('loading-message', 'Ready to go!');
             this.$emit('ready');
         }
 
