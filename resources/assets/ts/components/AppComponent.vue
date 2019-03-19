@@ -9,6 +9,9 @@
                                 :items="songs"
                                 label="What song is this?"
                                 prepend-icon="fas fa-music"
+                                :readonly="timerSeconds === 0"
+                                :success="timerSeconds === 0 && songIsRight"
+                                :error="timerSeconds === 0 && ! songIsRight"
                         ></v-autocomplete>
                     </v-flex>
 
@@ -16,6 +19,7 @@
                         <game-timer ref="timer"
                                     class="justify-center"
                                     v-model="timerSeconds"
+                                    :success="songIsRight || movieIsRight"
                                     @time-is-up="revealAnswer">
                             <div v-show="timerSeconds > 0">{{timerSeconds}}s</div>
                             <video-player ref="videoPlayer"
@@ -32,6 +36,9 @@
                                 v-model="movieAnswer"
                                 :items="movies"
                                 label="What movie is this song from?"
+                                :readonly="timerSeconds === 0"
+                                :success="timerSeconds === 0 && movieIsRight"
+                                :error="timerSeconds === 0 && ! movieIsRight"
                                 prepend-icon="fas fa-film"
                         ></v-autocomplete>
                     </v-flex>
@@ -46,7 +53,7 @@
     import {Component, Vue} from 'vue-property-decorator'
     import VideoPlayer from "./VideoPlayer.vue";
     import GameTimer from "./GameTimer.vue";
-
+// :color="timerSeconds > 0 ? 'grey' :  movieIsRight ? 'green' : 'red'"
     interface VideoQuestion {
         id: string,
         song: string,
@@ -81,13 +88,23 @@
 
         private movieAnswer: string = "";
         private songAnswer: string = "";
+        private playerPoints: number = 0;
 
         private get question(): VideoQuestion {
             return QUESTION_LIST[this.questionId];
         }
 
         private async revealAnswer(): Promise<void> {
+            if (this.movieAnswer === this.question.movie) {
+                this.playerPoints += 2;
+            }
+
+            if (this.songAnswer === this.question.song) {
+                this.playerPoints += 3;
+            }
+
             await this.player.reveal();
+
         }
 
         private async keepRandomJumping(): Promise<void> {
@@ -100,6 +117,8 @@
         }
 
         private getNextQuestion() {
+            this.songAnswer = "";
+            this.movieAnswer = "";
             this.timer.stop();
             this.questionId = 1;
             this.timerSeconds = QUESTION_TIME;
@@ -109,6 +128,14 @@
             await this.player.playRandomPoint();
             this.timer.start();
             await this.keepRandomJumping();
+        }
+
+        private get movieIsRight(): boolean {
+            return this.movieAnswer === this.question.movie;
+        }
+
+        private get songIsRight(): boolean {
+            return this.songAnswer === this.question.song;
         }
 
         private get player(): any {

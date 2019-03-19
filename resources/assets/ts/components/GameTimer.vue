@@ -19,6 +19,7 @@
     @Component
     export default class GameTimer extends Vue {
         @Prop() private value!: number;
+        @Prop() private success!: boolean;
 
         private interval: any;
         private startValue: number = 0;
@@ -51,7 +52,15 @@
                 return "light-blue darken-4";
             }
 
-            return this.value > 5 ? "orange darken-4" : "red";
+            if (this.value > 5) {
+                return "orange darken-4";
+            }
+
+            if (this.value > 0) {
+                return "red";
+            }
+
+            return this.success ? "green" : "red";
         }
     }
 </script>
