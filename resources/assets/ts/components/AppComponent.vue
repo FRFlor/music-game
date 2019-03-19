@@ -60,6 +60,17 @@
                                 prepend-icon="fas fa-film"
                         ></v-autocomplete>
                     </v-flex>
+
+                    <v-flex xs12>
+                        <div class="text-center mt-5">
+                            <v-btn color="light-blue darken-1"
+                                   class="justify-center"
+                                   @click="skipToAnswer"
+                                   :disabled="!canSkip"
+                                   outline
+                                   dark round large>Answer</v-btn>
+                        </div>
+                    </v-flex>
                 </v-layout>
             </v-container>
         </v-app>
@@ -113,6 +124,16 @@
             return QUESTION_LIST[this.questionId];
         }
 
+        private skipToAnswer(): void {
+            if (this.timerSeconds > 3) {
+                this.timerSeconds = 3;
+            }
+        }
+
+        private get canSkip(): boolean {
+            return this.timerSeconds > 3;
+        }
+
         private async revealAnswer(): Promise<void> {
             if (this.movieAnswer === this.question.movie) {
                 this.playerPoints += 2;
@@ -123,7 +144,6 @@
             }
 
             await this.player.reveal();
-
         }
 
         private async keepRandomJumping(): Promise<void> {
