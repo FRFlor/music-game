@@ -1,18 +1,46 @@
 <template>
-    <v-container>
-        <game-timer ref="timer"
-                    v-model="timerSeconds"
-                    @time-is-up="revealAnswer"/>
+    <div id="app">
+        <v-app id="musicgame">
+            <v-container app fluid>
+                <v-layout wrap>
+                    <v-flex xs12 sm4>
+                        <v-autocomplete
+                                v-model="songAnswer"
+                                :items="songs"
+                                label="What song is this?"
+                                prepend-icon="fas fa-music"
+                        ></v-autocomplete>
+                    </v-flex>
 
-        <video-player ref="videoPlayer"
-                      :video-id="question.id"
-                      :reveal-point="question.revealPoint"
-                      @reveal-finished="getNextQuestion"
-                      @ready="onPlayerReady"/>
+                    <v-flex xs12 sm4>
+                        <game-timer ref="timer"
+                                    class="justify-center"
+                                    v-model="timerSeconds"
+                                    @time-is-up="revealAnswer"/>
+                    </v-flex>
 
-        <v-btn @click="questionId = 1">Change Video</v-btn>
-        <v-btn @click="revealAnswer">Reveal!</v-btn>
-    </v-container>
+                    <v-flex xs12 sm4>
+                        <v-autocomplete
+                                v-model="movieAnswer"
+                                :items="movies"
+                                label="What movie is this song from?"
+                                prepend-icon="fas fa-film"
+                        ></v-autocomplete>
+                    </v-flex>
+
+                    <v-flex xs12>
+                        <video-player ref="videoPlayer"
+                                      class="justify-center"
+                                      :video-id="question.id"
+                                      :reveal-point="question.revealPoint"
+                                      @reveal-finished="getNextQuestion"
+                                      @ready="onPlayerReady"/>
+                    </v-flex>
+                </v-layout>
+            </v-container>
+        </v-app>
+    </div>
+
 </template>
 
 <script lang="ts">
@@ -27,7 +55,7 @@
         revealPoint: number,
     }
 
-    const QuestionList: VideoQuestion[] = [
+    const QUESTION_LIST: VideoQuestion[] = [
         {
             id: 'TVcLIfSC4OE',
             song: 'Make a man out of you',
@@ -52,8 +80,11 @@
         private questionId: number = 0;
         private timerSeconds: number = QUESTION_TIME;
 
+        private movieAnswer: string = "";
+        private songAnswer: string = "";
+
         private get question(): VideoQuestion {
-            return QuestionList[this.questionId];
+            return QUESTION_LIST[this.questionId];
         }
 
         private async revealAnswer(): Promise<void> {
@@ -91,6 +122,14 @@
 
         private get hintPlaySeconds(): number {
             return Math.floor(QUESTION_TIME / 4);
+        }
+
+        private get movies(): string[] {
+            return QUESTION_LIST.map((question: VideoQuestion) => question.movie);
+        }
+
+        private get songs(): string[] {
+            return QUESTION_LIST.map((question: VideoQuestion) => question.song);
         }
     }
 </script>

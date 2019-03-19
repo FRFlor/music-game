@@ -1,9 +1,9 @@
 <template>
-    <v-container>
+    <v-layout>
         <div class="video-container" :class="{'revealed' : showVideo}">
             <youtube :video-id="videoId" ref="youtube" @ready="onReady"></youtube>
         </div>
-    </v-container>
+    </v-layout>
 </template>
 
 <script lang="ts">
@@ -31,6 +31,11 @@
 
         private showVideo: boolean = false;
         private videoDuration: number = 0;
+
+        private mounted() {
+            this.player.setSize(280, 210);
+            // this.player.setSize(480, 360);
+        }
 
         private async onReady(): Promise<void> {
             await this.prepareVideo();
@@ -129,11 +134,12 @@
 
 <style scoped lang="scss">
     .video-container {
-        transition: all 5s ease;
+        transition: opacity 5s ease;
         opacity: 0;
-
+        height: 0;
         &.revealed {
             opacity: 1;
+            height: 210px;
         }
     }
 </style>
