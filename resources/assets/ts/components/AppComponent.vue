@@ -83,29 +83,7 @@
     import {Component, Vue} from 'vue-property-decorator'
     import VideoPlayer from "./VideoPlayer.vue";
     import GameTimer from "./GameTimer.vue";
-
-    // :color="timerSeconds > 0 ? 'grey' :  movieIsRight ? 'green' : 'red'"
-    interface VideoQuestion {
-        id: string,
-        song: string,
-        movie: string,
-        revealPoint: number,
-    }
-
-    const QUESTION_LIST: VideoQuestion[] = [
-        {
-            id: 'TVcLIfSC4OE',
-            song: 'Make a man out of you',
-            movie: 'Mulan',
-            revealPoint: 90, // BE A MAN!!! We must be swift as a coursing river! ...
-        },
-        {
-            id: 'SXKlJuO07eM',
-            song: 'Part of your world',
-            movie: 'Little Mermaid',
-            revealPoint: 85, // Up where they walk, up where they run, up where they stay all day in the sun ...
-        }
-    ];
+    import {QUESTION_LIST, VideoQuestion} from '../questions';
 
     const QUESTION_TIME: number = 25;
 
@@ -114,12 +92,18 @@
     })
     export default class AppComponent extends Vue {
 
-        private questionId: number = 0;
+        private questionId: number = 1;
         private timerSeconds: number = QUESTION_TIME;
+        private questionIdsUsed: number[] = [];
 
         private movieAnswer: string = "";
         private songAnswer: string = "";
         private playerPoints: number = 0;
+
+        private created() {
+            this.questionId = Math.floor(Math.random() * QUESTION_LIST.length);
+            this.questionIdsUsed.push(this.questionId);
+        }
 
         private get question(): VideoQuestion {
             return QUESTION_LIST[this.questionId];
@@ -132,7 +116,7 @@
         }
 
         private get canSkip(): boolean {
-            return this.timerSeconds > 3;
+            return this.timerSeconds < QUESTION_TIME - 3 && this.timerSeconds > 3;
         }
 
         private async revealAnswer(): Promise<void> {
@@ -160,8 +144,16 @@
             this.songAnswer = "";
             this.movieAnswer = "";
             this.timer.stop();
-            this.questionId = 1;
             this.timerSeconds = QUESTION_TIME;
+            let candidate: number = 0;
+            do {
+                candidate = Math.floor(Math.random() * QUESTION_LIST.length)
+            } while (this.questionIdsUsed.indexOf(candidate) !== -1);
+            this.questionId = candidate;
+            this.questionIdsUsed.push(this.questionId);
+            if (this.questionIdsUsed.length === QUESTION_LIST.length) {
+                this.questionIdsUsed = [];
+            }
         }
 
         private async onPlayerReady(): Promise<void> {
