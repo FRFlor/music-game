@@ -2,7 +2,8 @@
     <div>
         <youtube v-if="videoId"
                  :video-id="videoId"
-                 @ready="onVideoReady"
+                 @ready="isReady = true"
+                 @playing="isPlaying = true"
                  ref="youtube"></youtube>
     </div>
 </template>
@@ -17,6 +18,7 @@
     export default class VideoPlayer extends Vue {
         protected videoId: string = '';
         protected isReady: boolean = false;
+        protected isPlaying: boolean = false;
 
         public async selectVideo(videoId: string): Promise<void> {
             if (this.videoId) {
@@ -31,6 +33,7 @@
         public async playVideo(): Promise<void> {
             await this.untilPlayerIsReady();
             await this.player.playVideo();
+            await this.untilVideoStartsPlaying();
         }
 
         public async stopVideo(): Promise<void> {
@@ -45,19 +48,20 @@
             return await this.player.setVolume(volume);
         }
 
-        protected onVideoReady(): void {
-            this.isReady = true;
+        protected async pollUntilTrue(testee: boolean): Promise<void> {
+            if (testee) {
+                return;
+            }
+
+            setTimeout(() => this.pollUntilTrue(this.isReady), 200);
         }
 
         protected async untilPlayerIsReady(): Promise<void> {
-            const pollUntilTrue = async (testee: boolean) => {
-                if (testee) {
-                    return;
-                }
-                setTimeout(() => pollUntilTrue(this.isReady), 200);
-            };
+            return await this.pollUntilTrue(this.isReady);
+        }
 
-            return await pollUntilTrue(this.isReady);
+        protected async untilVideoStartsPlaying(): Promise<void> {
+            return await this.pollUntilTrue(this.isPlaying);
         }
 
         protected get player(): YoutubeAPI {

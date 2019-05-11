@@ -4,11 +4,13 @@ export { YoutubeAPI };
 export default class VideoPlayer extends Vue {
     protected videoId: string;
     protected isReady: boolean;
+    protected isPlaying: boolean;
     selectVideo(videoId: string): Promise<void>;
     playVideo(): Promise<void>;
     stopVideo(): Promise<void>;
     setVolume(volume: number): Promise<void>;
-    protected onVideoReady(): void;
+    protected pollUntilTrue(testee: boolean): Promise<void>;
     protected untilPlayerIsReady(): Promise<void>;
+    protected untilVideoStartsPlaying(): Promise<void>;
     protected readonly player: YoutubeAPI;
 }
