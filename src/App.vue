@@ -1,43 +1,34 @@
 <template>
     <div id="app">
-        <img alt="Vue logo" src="./assets/logo.png">
-        <VideoPlayer ref="videoPlayer"/>
+        <game-video ref="gameVideo"
+                    :question-data="currentQuestion"/>
         <button @click="playQuestion">Play playQuestion</button>
     </div>
 </template>
 
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
-    import VideoPlayer from '@/components/VideoPlayer.vue';
-    import {QUESTION_LIST} from '@/storage/questionList';
+    import GameVideo from '@/components/GameVideo.vue';
+    import {QUESTION_LIST, VideoQuestion} from './storage/questionList';
 
-    @Component({
-        components: {
-            VideoPlayer,
-        },
-    })
+    @Component({ components: {
+            GameVideo,
+        } })
     export default class App extends Vue {
+        protected currentQuestion: VideoQuestion = QUESTION_LIST[0];
 
         protected async playQuestion(): Promise<void> {
-            const questionId = Math.floor(Math.random() * QUESTION_LIST.length);
-            await this.videoPlayer.selectVideo(QUESTION_LIST[questionId].id);
-            await this.videoPlayer.playVideo();
+            const selectedIndex = Math.floor(Math.random() * QUESTION_LIST.length);
+            this.currentQuestion = QUESTION_LIST[selectedIndex];
+            await this.gameVideo.startQuestion(this.currentQuestion);
         }
 
-        protected get videoPlayer(): VideoPlayer {
+        protected get gameVideo(): GameVideo {
             // @ts-ignore
-            return this.$refs.videoPlayer;
+            return this.$refs.gameVideo;
         }
     }
 </script>
 
-<style lang="scss">
-    #app {
-        font-family: 'Avenir', Helvetica, Arial, sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-align: center;
-        color: #2c3e50;
-        margin-top: 60px;
-    }
+<style lang="scss" scoped>
 </style>

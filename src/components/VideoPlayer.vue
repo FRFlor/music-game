@@ -10,15 +10,18 @@
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
     import {YoutubeAPI} from '../classes/YoutubeAPI';
+
     export {YoutubeAPI};
 
     @Component
     export default class VideoPlayer extends Vue {
         protected videoId: string = '';
         protected isReady: boolean = false;
-        protected renderVideo: boolean = false;
 
         public async selectVideo(videoId: string): Promise<void> {
+            if (this.videoId) {
+                await this.stopVideo();
+            }
             this.videoId = videoId;
             this.isReady = false;
             await this.untilPlayerIsReady();
@@ -26,7 +29,16 @@
         }
 
         public async playVideo(): Promise<void> {
+            await this.untilPlayerIsReady();
             await this.player.playVideo();
+        }
+
+        public async stopVideo(): Promise<void> {
+            if (this.videoId.length === 0) {
+                return;
+            }
+            await this.untilPlayerIsReady();
+            await this.player.stopVideo();
         }
 
         protected onVideoReady(): void {
@@ -51,23 +63,5 @@
     }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-    h3 {
-        margin: 40px 0 0;
-    }
-
-    ul {
-        list-style-type: none;
-        padding: 0;
-    }
-
-    li {
-        display: inline-block;
-        margin: 0 10px;
-    }
-
-    a {
-        color: #42b983;
-    }
 </style>
