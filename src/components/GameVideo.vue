@@ -1,8 +1,12 @@
 <template>
-    <video-player
-            class="game-video"
-            :class="{'revealed' : isRevealed}"
-            ref="videoPlayer"/>
+    <div>
+        <video-player
+                class="game-video"
+                :class="{'revealed' : isRevealed}"
+                ref="videoPlayer"/>
+        <button @click="playRandomPoint">Random</button>
+    </div>
+
 </template>
 
 <script lang="ts">
@@ -10,28 +14,43 @@
     import VideoPlayer from './VideoPlayer.vue';
     import {VideoQuestion} from '@/interfaces';
     import {QUESTION_LIST} from '@/storage/questionList';
+    import {randBetween} from '@/support';
 
     @Component({ components: {VideoPlayer} })
     export default class GameVideo extends Vue {
         protected questionData: VideoQuestion | null = null;
+        protected videoDuration: number = 0;
+        protected readonly PLAY_MARGIN: number = 30; // Start/End seconds that won't be played during random selection
 
         protected isRevealed: boolean = false;
 
         public async startQuestion(questionData: VideoQuestion): Promise<void> {
-            this.questionData = questionData;
-            await this.videoPlayer.selectVideo(this.questionData.videoId);
-            await this.videoPlayer.setVolume(0);
-            await this.videoPlayer.playVideo();
+            await this.prepareQuestionToPlay(questionData);
+
+            await this.playRandomPoint();
             await this.volumeFadeIn();
             this.isRevealed = true;
         }
 
         public async playRandomPoint(): Promise<void> {
-            // const playSpeed: number = Math.random() < 0.5 ? 0.25 : 2;
-            // await this.videoPlayer.setPlaybackRate(playSpeed);
-            // const randomPoint: number = randBetween(PLAY_MARGIN, this.videoDuration - PLAY_MARGIN);
-            // await this.videoPlayer.seekTo(randomPoint, true);
-            // await this.awaitForVideoToPlay();
+            const playSpeed: number = Math.random() < 0.5 ? 0.25 : 2;
+            await this.videoPlayer.setPlaybackRate(playSpeed);
+            const randomPoint: number = randBetween(this.PLAY_MARGIN, this.videoDuration - this.PLAY_MARGIN);
+            await this.videoPlayer.seekTo(randomPoint, true);
+        }
+
+        protected async prepareQuestionToPlay(questionData: VideoQuestion): Promise<void> {
+            this.questionData = questionData;
+            await this.videoPlayer.selectVideo(this.questionData.videoId);
+            await this.videoPlayer.setVolume(0);
+            await this.videoPlayer.setPlaybackRate(1);
+
+            await this.videoPlayer.playVideo();
+            this.videoDuration = await this.videoPlayer.getDuration();
+            while(isNaN(this.videoDuration) || this.videoDuration <= 0) {
+                this.videoDuration = await this.videoPlayer.getDuration();
+                await this.wait(500);
+            }
         }
 
         protected async volumeFadeIn(): Promise<void> {

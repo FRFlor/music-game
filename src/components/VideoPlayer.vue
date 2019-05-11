@@ -1,3 +1,5 @@
+import {PlayerState} from '../interfaces';
+import {PlayerState} from '../interfaces';
 <template>
     <div>
         <youtube v-if="videoId"
@@ -10,7 +12,7 @@
 
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
-    import {YoutubeAPI} from '../interfaces/YoutubeAPI';
+    import {PlayerState, YoutubeAPI} from '../interfaces/YoutubeAPI';
 
     export {YoutubeAPI};
 
@@ -18,14 +20,12 @@
     export default class VideoPlayer extends Vue implements YoutubeAPI {
         protected videoId: string = '';
         protected isReady: boolean = false;
-        protected isPlaying: boolean = false;
 
         public async selectVideo(videoId: string): Promise<void> {
             if (this.videoId) {
                 await this.stopVideo();
             }
             this.videoId = videoId;
-            this.isReady = false;
             await this.untilPlayerIsReady();
             return;
         }
@@ -36,58 +36,74 @@
             await this.untilVideoStartsPlaying();
         }
 
+        public async pauseVideo(): Promise<void> {
+            await this.untilPlayerIsReady();
+            await this.player.pauseVideo();
+        }
+
         public async stopVideo(): Promise<void> {
             await this.untilPlayerIsReady();
             await this.player.stopVideo();
-            this.isPlaying = false;
         }
 
-        public mute(): Promise<void> {
+        public async mute(): Promise<void> {
             throw new Error('Method not implemented.');
         }
 
-        public unMute(): Promise<void> {
+        public async unMute(): Promise<void> {
             throw new Error('Method not implemented.');
         }
 
-        public isMuted(): Promise<void> {
+        public async isMuted(): Promise<void> {
             throw new Error('Method not implemented.');
         }
 
-        public getVolume(): Promise<number> {
+        public async getVolume(): Promise<number> {
             throw new Error('Method not implemented.');
         }
 
-        public getPlaybackRate(): Promise<void> {
+        public async getPlaybackRate(): Promise<void> {
             throw new Error('Method not implemented.');
         }
 
-        public setPlaybackRate(suggestedRate: number): Promise<void> {
+        public async getPlayerState(): Promise<PlayerState> {
             throw new Error('Method not implemented.');
         }
 
-        public getDuration(): Promise<number> {
-            throw new Error('Method not implemented.');
+        public async setPlaybackRate(suggestedRate: number): Promise<void> {
+            await this.untilPlayerIsReady();
+            await this.player.setPlaybackRate(suggestedRate);
         }
 
-        public pauseVideo(): Promise<void> {
-            throw new Error('Method not implemented.');
+        public async getDuration(): Promise<number> {
+            await this.untilPlayerIsReady();
+            return await this.player.getDuration();
         }
 
-        public seekTo(seconds: number, allowSeekAhead: boolean): Promise<void> {
-            throw new Error('Method not implemented.');
+        public async seekTo(seconds: number, allowSeekAhead: boolean): Promise<void> {
+            let shouldWaitUntilPlayingAgain: boolean = false;
+            if (await this.player.getPlayerState() === PlayerState.playing) {
+                shouldWaitUntilPlayingAgain = true;
+            }
+
+            await this.untilPlayerIsReady();
+            await this.player.seekTo(seconds, allowSeekAhead);
+
+            if (shouldWaitUntilPlayingAgain) {
+                await this.untilVideoStartsPlaying();
+            }
         }
 
         public async setVolume(volume: number): Promise<void> {
             return await this.player.setVolume(volume);
         }
 
-        protected async pollUntilTrue(testee: boolean): Promise<void> {
-            if (testee) {
+        protected async pollUntilTrue(cb: () => Promise<boolean>): Promise<void> {
+            if (await cb()) {
                 return;
             }
 
-            setTimeout(() => this.pollUntilTrue(this.isReady), 200);
+            setTimeout(() => this.pollUntilTrue(cb), 500);
         }
 
         protected async untilPlayerIsReady(): Promise<void> {
@@ -95,11 +111,19 @@
                 throw new Error('A video must be selected first before any other action can be taken');
             }
 
-            return await this.pollUntilTrue(this.isReady);
+            const playerIsReady = async (): Promise<boolean> => {
+                return this.isReady;
+            };
+
+            return await this.pollUntilTrue(playerIsReady);
         }
 
         protected async untilVideoStartsPlaying(): Promise<void> {
-            return await this.pollUntilTrue(this.isPlaying);
+            const isPlaying = async (): Promise<boolean> => {
+                return await this.player.getPlayerState() === PlayerState.playing;
+            };
+
+            return await this.pollUntilTrue(isPlaying);
         }
 
         protected get player(): YoutubeAPI {

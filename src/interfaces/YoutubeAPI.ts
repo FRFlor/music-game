@@ -1,4 +1,13 @@
 // Based on: https://developers.google.com/youtube/iframe_api_reference#playVideoAt
+export enum PlayerState {
+    unstarted,
+    ended,
+    playing,
+    paused,
+    buffering,
+    cued,
+}
+
 export interface YoutubeAPI {
     mute(): Promise<void>;
 
@@ -11,6 +20,8 @@ export interface YoutubeAPI {
     getVolume(): Promise<number>;
 
     getPlaybackRate(): Promise<void>;
+
+    getPlayerState(): Promise<PlayerState>;
 
     setPlaybackRate(suggestedRate: number): Promise<void>;
 
