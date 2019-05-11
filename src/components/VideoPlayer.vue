@@ -9,9 +9,11 @@
 
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
+    import {YoutubeAPI} from '../classes/YoutubeAPI';
+    export {YoutubeAPI};
 
     @Component
-    export default class HelloWorld extends Vue {
+    export default class VideoPlayer extends Vue {
         protected videoId: string = '';
         protected isReady: boolean = false;
         protected renderVideo: boolean = false;
@@ -21,6 +23,10 @@
             this.isReady = false;
             await this.untilPlayerIsReady();
             return;
+        }
+
+        public async playVideo(): Promise<void> {
+            await this.player.playVideo();
         }
 
         protected onVideoReady(): void {
@@ -38,7 +44,7 @@
             return await pollUntilTrue(this.isReady);
         }
 
-        protected get player(): any {
+        protected get player(): YoutubeAPI {
             // @ts-ignore
             return this.$refs.youtube.player;
         }
