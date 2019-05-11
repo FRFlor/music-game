@@ -9,7 +9,8 @@
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
     import GameVideo from '@/components/GameVideo.vue';
-    import {QUESTION_LIST, VideoQuestion} from './storage/questionList';
+    import {QUESTION_LIST} from './storage/questionList';
+    import {VideoQuestion} from '@/interfaces';
 
     @Component({ components: {
             GameVideo,

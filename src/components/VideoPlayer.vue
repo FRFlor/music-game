@@ -10,12 +10,12 @@
 
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
-    import {YoutubeAPI} from '../classes/YoutubeAPI';
+    import {YoutubeAPI} from '../interfaces/YoutubeAPI';
 
     export {YoutubeAPI};
 
     @Component
-    export default class VideoPlayer extends Vue {
+    export default class VideoPlayer extends Vue implements YoutubeAPI {
         protected videoId: string = '';
         protected isReady: boolean = false;
         protected isPlaying: boolean = false;
@@ -42,6 +42,43 @@
             }
             await this.untilPlayerIsReady();
             await this.player.stopVideo();
+            this.isPlaying = false;
+        }
+
+        public mute(): Promise<void> {
+            throw new Error('Method not implemented.');
+        }
+
+        public unMute(): Promise<void> {
+            throw new Error('Method not implemented.');
+        }
+
+        public isMuted(): Promise<void> {
+            throw new Error('Method not implemented.');
+        }
+
+        public getVolume(): Promise<number> {
+            throw new Error('Method not implemented.');
+        }
+
+        public getPlaybackRate(): Promise<void> {
+            throw new Error('Method not implemented.');
+        }
+
+        public setPlaybackRate(suggestedRate: number): Promise<void> {
+            throw new Error('Method not implemented.');
+        }
+
+        public getDuration(): Promise<number> {
+            throw new Error('Method not implemented.');
+        }
+
+        public pauseVideo(): Promise<void> {
+            throw new Error('Method not implemented.');
+        }
+
+        public seekTo(seconds: number, allowSeekAhead: boolean): Promise<void> {
+            throw new Error('Method not implemented.');
         }
 
         public async setVolume(volume: number): Promise<void> {

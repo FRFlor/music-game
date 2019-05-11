@@ -1,9 +1,4 @@
-export interface VideoQuestion {
-    videoId: string;
-    song: string;
-    movie: string;
-    revealPoint: number;
-}
+import {VideoQuestion} from '@/interfaces';
 
 export const QUESTION_LIST: VideoQuestion[] = [
     {

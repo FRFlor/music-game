@@ -8,7 +8,8 @@
 <script lang="ts">
     import {Component, Vue, Prop} from 'vue-property-decorator';
     import VideoPlayer from './VideoPlayer.vue';
-    import {QUESTION_LIST, VideoQuestion} from '@/storage/questionList';
+    import {VideoQuestion} from '@/interfaces';
+    import {QUESTION_LIST} from '@/storage/questionList';
 
     @Component({ components: {VideoPlayer} })
     export default class GameVideo extends Vue {
@@ -25,11 +26,19 @@
             this.isRevealed = true;
         }
 
-        public async volumeFadeIn(): Promise<void> {
+        public async playRandomPoint(): Promise<void> {
+            // const playSpeed: number = Math.random() < 0.5 ? 0.25 : 2;
+            // await this.videoPlayer.setPlaybackRate(playSpeed);
+            // const randomPoint: number = randBetween(PLAY_MARGIN, this.videoDuration - PLAY_MARGIN);
+            // await this.videoPlayer.seekTo(randomPoint, true);
+            // await this.awaitForVideoToPlay();
+        }
+
+        protected async volumeFadeIn(): Promise<void> {
             await this.volumeFade(20);
         }
 
-        public async volumeFadeOut(): Promise<void> {
+        protected async volumeFadeOut(): Promise<void> {
             await this.volumeFade(-20);
         }
 
