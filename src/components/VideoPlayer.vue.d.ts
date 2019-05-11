@@ -7,6 +7,7 @@ export default class VideoPlayer extends Vue {
     selectVideo(videoId: string): Promise<void>;
     playVideo(): Promise<void>;
     stopVideo(): Promise<void>;
+    setVolume(volume: number): Promise<void>;
     protected onVideoReady(): void;
     protected untilPlayerIsReady(): Promise<void>;
     protected readonly player: YoutubeAPI;

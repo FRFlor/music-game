@@ -41,6 +41,10 @@
             await this.player.stopVideo();
         }
 
+        public async setVolume(volume: number): Promise<void> {
+            return await this.player.setVolume(volume);
+        }
+
         protected onVideoReady(): void {
             this.isReady = true;
         }
