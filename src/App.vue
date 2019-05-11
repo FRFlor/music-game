@@ -2,13 +2,14 @@
     <div id="app">
         <img alt="Vue logo" src="./assets/logo.png">
         <VideoPlayer ref="videoPlayer"/>
-        <button @click="playDespacito">Play Despacito</button>
+        <button @click="playQuestion">Play playQuestion</button>
     </div>
 </template>
 
 <script lang="ts">
     import {Component, Vue} from 'vue-property-decorator';
     import VideoPlayer from '@/components/VideoPlayer.vue';
+    import {QUESTION_LIST} from '@/storage/questionList';
 
     @Component({
         components: {
@@ -17,8 +18,9 @@
     })
     export default class App extends Vue {
 
-        protected async playDespacito(): Promise<void> {
-            await this.videoPlayer.selectVideo('lG0Ys-2d4MA');
+        protected async playQuestion(): Promise<void> {
+            const questionId = Math.floor(Math.random() * QUESTION_LIST.length);
+            await this.videoPlayer.selectVideo(QUESTION_LIST[questionId].id);
             await this.videoPlayer.playVideo();
         }
 
