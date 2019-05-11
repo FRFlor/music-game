@@ -37,9 +37,6 @@
         }
 
         public async stopVideo(): Promise<void> {
-            if (this.videoId.length === 0) {
-                return;
-            }
             await this.untilPlayerIsReady();
             await this.player.stopVideo();
             this.isPlaying = false;
@@ -94,6 +91,10 @@
         }
 
         protected async untilPlayerIsReady(): Promise<void> {
+            if (this.videoId === '') {
+                throw new Error('A video must be selected first before any other action can be taken');
+            }
+
             return await this.pollUntilTrue(this.isReady);
         }
 
