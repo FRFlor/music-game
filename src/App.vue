@@ -22,6 +22,7 @@
                         class="my-3"
                         :size="diameterOfTimer"
                         v-model="secondsRemaining"
+                        :success="songIsRight || movieIsRight"
                         @time-is-up="revealAnswer">
                 <v-btn fab dark
                        v-if="!gameHasStarted"
