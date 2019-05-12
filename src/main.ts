@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueYoutube from 'vue-youtube';
+import './plugins/vuetify';
 
 Vue.use(VueYoutube);
 import App from './App.vue';

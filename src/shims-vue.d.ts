@@ -6,3 +6,4 @@ declare module '*.vue' {
 
 declare module 'vue-youtube';
 declare module 'async-polling';
+declare module 'vuetify/lib';
