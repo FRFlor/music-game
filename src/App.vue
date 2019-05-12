@@ -91,6 +91,7 @@
     })
     export default class App extends Vue {
         protected currentQuestion: VideoQuestion = QUESTION_LIST[0];
+        protected indexesOfQuestionsUsed: number[] = [];
         protected readonly TIME_PER_QUESTION: number = 15;
         protected secondsRemaining: number = this.TIME_PER_QUESTION;
         protected readonly videoPlayerSize: number = 350;
@@ -113,16 +114,29 @@
 
         protected async playQuestion(): Promise<void> {
             this.gameHasStarted = true;
-            const selectedIndex = Math.floor(Math.random() * QUESTION_LIST.length);
-            this.currentQuestion = QUESTION_LIST[selectedIndex];
-            // this.currentQuestion = QUESTION_LIST
-            // .find((question: VideoQuestion) => question.song === 'Let It Go') || QUESTION_LIST[0];
+            this.getNextQuestion();
 
-            this.secondsRemaining = this.TIME_PER_QUESTION;
-            this.loadingMessage = 'Loading video...';
             await this.gameVideo.startQuestion(this.currentQuestion);
             this.loadingMessage = '';
             this.timer.start();
+        }
+
+        protected getNextQuestion(): void {
+            this.loadingMessage = 'Loading Question...';
+
+            this.songAnswer = "";
+            this.movieAnswer = "";
+            this.timer.stop();
+            this.secondsRemaining = this.TIME_PER_QUESTION;
+            let candidate: number = 0;
+            do {
+                candidate = Math.floor(Math.random() * QUESTION_LIST.length)
+            } while (this.indexesOfQuestionsUsed.includes(candidate));
+            this.indexesOfQuestionsUsed.push(candidate);
+            this.currentQuestion = QUESTION_LIST[candidate];
+            if (this.indexesOfQuestionsUsed.length === QUESTION_LIST.length) {
+                this.indexesOfQuestionsUsed = [];
+            }
         }
 
         protected async revealAnswer(): Promise<void> {
