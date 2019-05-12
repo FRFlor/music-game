@@ -74,6 +74,8 @@
                 this.videoDuration = await this.videoPlayer.getDuration();
                 await this.wait(500);
             }
+
+            this.disableYoutubeKeyboardNavigation();
         }
 
         protected async volumeFadeIn(): Promise<void> {
@@ -104,6 +106,14 @@
 
         protected async wait(ms: number): Promise<void> {
             await new Promise((resolve) => setTimeout(resolve, ms));
+        }
+
+        protected disableYoutubeKeyboardNavigation(): void {
+            const youtubeIframe: HTMLIFrameElement | null = document.querySelector('iframe');
+            if (youtubeIframe === null) {
+               throw Error('Could not find any iframe in the DOM');
+            }
+            youtubeIframe.setAttribute('tabindex', '-1');
         }
     }
 </script>
