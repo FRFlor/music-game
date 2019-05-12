@@ -46,10 +46,6 @@
             this.interval = null;
         }
 
-        public get isPlaying(): boolean {
-            return !!this.interval;
-        }
-
         protected get timerColour(): string {
             if (this.value > 10) {
                 return 'light-blue darken-4';
