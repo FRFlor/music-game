@@ -91,7 +91,7 @@
     export default class App extends Vue {
         protected currentQuestion: VideoQuestion = QUESTION_LIST[0];
         protected indexesOfQuestionsUsed: number[] = [];
-        protected readonly TIME_PER_QUESTION: number = 15;
+        protected readonly TIME_PER_QUESTION: number = 25;
         protected secondsRemaining: number = this.TIME_PER_QUESTION;
         protected readonly videoPlayerSize: number = 350;
 
@@ -120,7 +120,7 @@
 
             await this.gameVideo.startQuestion(this.currentQuestion);
             this.message = '';
-            this.timer.start();
+            setTimeout(() => this.timer.start(), 1500);
         }
 
         protected getNextQuestion(): void {
