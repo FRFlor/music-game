@@ -8,14 +8,14 @@
 </template>
 
 <script lang="ts">
-    import {Component, Vue, Prop, Watch} from 'vue-property-decorator';
+    import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
     import VideoPlayer from './VideoPlayer.vue';
     import {VideoQuestion} from '@/interfaces';
     import {randBetween} from '@/support';
 
     @Component({components: {VideoPlayer}})
     export default class GameVideo extends Vue {
-        @Prop() size!: number;
+        @Prop() protected size!: number;
 
         protected questionData: VideoQuestion | null = null;
         protected videoDuration: number = 0;
@@ -33,8 +33,7 @@
         @Watch('size')
         public async updateVideoSize(): Promise<void> {
             const desiredHeight: number = this.size;
-            const desiredWidth: number = Math.round(this.size * 4/3);
-            console.log(desiredWidth, desiredHeight);
+            const desiredWidth: number = Math.round(this.size * 4 / 3);
             await this.videoPlayer.setSize(desiredWidth, desiredHeight);
         }
 

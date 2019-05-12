@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-    import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
+    import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
 
     @Component
     export default class GameTimer extends Vue {
@@ -22,15 +22,6 @@
         private interval: any;
         private startValue: number = 0;
         private progress: number = 100;
-
-        @Watch('size')
-        protected onTimerSizeChanged(): void {
-            document.documentElement.style.setProperty('--timer-size', `${this.size}px`);
-        }
-
-        protected created(): void {
-            this.onTimerSizeChanged();
-        }
 
         public start(): void {
             this.startValue = this.value;
@@ -56,23 +47,32 @@
         }
 
         public get isPlaying(): boolean {
-            return !! this.interval;
+            return !!this.interval;
         }
 
-        private get timerColour(): string {
+        protected get timerColour(): string {
             if (this.value > 10) {
-                return "light-blue darken-4";
+                return 'light-blue darken-4';
             }
 
             if (this.value > 5) {
-                return "orange darken-4";
+                return 'orange darken-4';
             }
 
             if (this.value > 0) {
-                return "red";
+                return 'red';
             }
 
-            return this.success ? "green" : "red";
+            return this.success ? 'green' : 'red';
+        }
+
+        @Watch('size')
+        protected onTimerSizeChanged(): void {
+            document.documentElement.style.setProperty('--timer-size', `${this.size}px`);
+        }
+
+        protected created(): void {
+            this.onTimerSizeChanged();
         }
     }
 </script>

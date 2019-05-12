@@ -2,7 +2,7 @@ import { Vue } from 'vue-property-decorator';
 import VideoPlayer from './VideoPlayer.vue';
 import { VideoQuestion } from '@/interfaces';
 export default class GameVideo extends Vue {
-    size: number;
+    protected size: number;
     protected questionData: VideoQuestion | null;
     protected videoDuration: number;
     protected readonly PLAY_MARGIN: number;
