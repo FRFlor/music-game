@@ -1,6 +1,6 @@
 <template>
-    <v-app id="musicgame">
-        <v-container app class="music-game">
+    <v-app id="musicgame" style="background: transparent;">
+        <v-container app class="music-game elevation-5">
             <!--Scoreboard-->
             <span v-text="`Your score: ${playerPoints}`"
                   class="headline light-blue--text text--darken-1 mb-4"></span>
@@ -196,6 +196,10 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        max-width: 450px;
+        max-height: 800px;
+        background-color: hsla(200, 100%, 95%, 0.9);
+        outline: hsla(210, 100%, 56%, 0.65) solid 6px;
     }
 
     .input-box {
