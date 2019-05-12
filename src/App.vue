@@ -1,6 +1,6 @@
 <template>
     <v-app id="musicgame" style="background: transparent;">
-        <v-container app class="music-game elevation-5">
+        <v-container class="music-game pb-5 elevation-5">
             <!--Scoreboard-->
             <span v-text="`Your score: ${playerPoints}`"
                   class="headline light-blue--text text--darken-1 mb-4"></span>
@@ -74,6 +74,7 @@
                 Answer
             </v-btn>
         </v-container>
+        <app-footer/>
     </v-app>
 </template>
 
@@ -83,9 +84,11 @@
     import {QUESTION_LIST} from './storage/questionList';
     import {VideoQuestion} from '@/interfaces';
     import GameTimer from '@/components/GameTimer.vue';
+    import AppFooter from '@/components/AppFooter.vue';
 
     @Component({
         components: {
+            AppFooter,
             GameTimer,
             GameVideo,
         },
