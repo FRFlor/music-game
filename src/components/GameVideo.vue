@@ -4,10 +4,7 @@
                 class="game-video"
                 :class="{'revealed' : isRevealed}"
                 ref="videoPlayer"/>
-        <v-btn @click="playRandomPoint">Random</v-btn>
-        <v-btn @click="reveal">Reveal</v-btn>
     </div>
-
 </template>
 
 <script lang="ts">
@@ -60,6 +57,7 @@
             await this.videoPlayer.selectVideo(this.questionData.videoId);
             await this.videoPlayer.setVolume(0);
             await this.videoPlayer.setPlaybackRate(1);
+            await this.videoPlayer.setSize(280, 210);
 
             await this.videoPlayer.playVideo();
             this.videoDuration = await this.videoPlayer.getDuration();
@@ -103,8 +101,12 @@
 
 <style scoped lang="scss">
     .game-video {
-        transition: all 5s ease;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        clip-path: circle(30%);
+        transition: opacity 5s ease;
         opacity: 0;
+        height: 210px;
 
         &.revealed {
             opacity: 1;

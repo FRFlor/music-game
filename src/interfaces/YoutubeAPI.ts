@@ -25,6 +25,8 @@ export interface YoutubeAPI {
 
     setPlaybackRate(suggestedRate: number): Promise<void>;
 
+    setSize(width: number, height: number): Promise<void>;
+
     playVideo(): Promise<void>;
 
     getDuration(): Promise<number>;

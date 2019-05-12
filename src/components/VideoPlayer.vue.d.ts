@@ -14,6 +14,7 @@ export default class VideoPlayer extends Vue implements YoutubeAPI {
     getPlaybackRate(): Promise<void>;
     getPlayerState(): Promise<PlayerState>;
     setPlaybackRate(suggestedRate: number): Promise<void>;
+    setSize(width: number, height: number): Promise<void>;
     getDuration(): Promise<number>;
     seekTo(seconds: number, allowSeekAhead: boolean): Promise<void>;
     setVolume(volume: number): Promise<void>;

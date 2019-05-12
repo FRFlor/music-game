@@ -71,6 +71,11 @@
             await this.player.setPlaybackRate(suggestedRate);
         }
 
+        public async setSize(width: number, height: number): Promise<void> {
+            await this.untilPlayerIsReady();
+            await this.player.setSize(width, height);
+        }
+
         public async getDuration(): Promise<number> {
             await this.untilPlayerIsReady();
             return await this.player.getDuration();
