@@ -44,6 +44,7 @@
                     if (secondsRemaining === 0) {
                         this.$emit('time-is-up');
                         this.progress = 100;
+                        this.stop();
                     }
                 }
             }, 1000);
@@ -80,5 +81,6 @@
     .game-timer {
         font-size: calc(var(--timer-size) * 0.25);
         font-family: Roboto, sans-serif;
+        font-weight: lighter;
     }
 </style>
