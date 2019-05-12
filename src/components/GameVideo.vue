@@ -110,6 +110,7 @@
 
 <style scoped lang="scss">
     .game-video {
+        pointer-events: none;
         transition: opacity 5s ease;
         position: absolute;
         transform: translate(-50%, -50%);
