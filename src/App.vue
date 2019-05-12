@@ -48,7 +48,7 @@
         protected async playQuestion(): Promise<void> {
             const selectedIndex = Math.floor(Math.random() * QUESTION_LIST.length);
             this.currentQuestion = QUESTION_LIST[selectedIndex];
-            this.currentQuestion = QUESTION_LIST.find((question: VideoQuestion) => question.song === 'Friend Like Me') || QUESTION_LIST[0];
+            // this.currentQuestion = QUESTION_LIST.find((question: VideoQuestion) => question.song === 'Let It Go') || QUESTION_LIST[0];
 
             this.timerSeconds = 5;
             await this.gameVideo.startQuestion(this.currentQuestion);
@@ -60,7 +60,7 @@
         }
 
         protected get diameterOfTimer(): number {
-            return Math.round(this.videoPlayerSize * 3/4);
+            return Math.round(this.videoPlayerSize * 0.65);
         }
 
         protected get gameVideo(): GameVideo {

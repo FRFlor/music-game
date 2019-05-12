@@ -114,7 +114,7 @@
         transition: opacity 5s ease;
         position: absolute;
         transform: translate(-50%, -50%);
-        clip-path: circle(30%);
+        clip-path: circle(25%);
         opacity: 0;
         height: var(--video-size);
 

@@ -1,7 +1,7 @@
 <template>
     <v-progress-circular :value="progress"
                          :size="size"
-                         width="10"
+                         width="12"
                          class="title"
                          :color="timerColour">
         <slot>
