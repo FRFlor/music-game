@@ -7,12 +7,13 @@
 
             <!--Movie Answer Input-->
             <v-autocomplete
+                    class="input-box"
                     v-model="movieAnswer"
                     :items="movies"
                     label="What movie is this song from?"
-                    :readonly="timerSeconds === 0"
-                    :success="timerSeconds === 0 && movieIsRight"
-                    :error="timerSeconds === 0 && ! movieIsRight"
+                    :readonly="secondsRemaining === 0"
+                    :success="secondsRemaining === 0 && movieIsRight"
+                    :error="secondsRemaining === 0 && ! movieIsRight"
                     prepend-icon="fas fa-film"
             ></v-autocomplete>
 
@@ -20,20 +21,26 @@
             <game-timer ref="timer"
                         class="my-3"
                         :size="diameterOfTimer"
-                        v-model="timerSeconds"
+                        v-model="secondsRemaining"
                         @time-is-up="revealAnswer">
-                <div v-show="timerSeconds > 0">{{timerSeconds}}s</div>
+                <v-btn fab dark
+                       v-if="!gameHasStarted"
+                       class="start-button"
+                       @click="playQuestion">
+                    Start Game
+                </v-btn>
+                <div v-show="secondsRemaining > 0 && gameHasStarted" v-text="">{{secondsRemaining}}s</div>
                 <game-video ref="gameVideo"
                             :size="videoPlayerSize"
                             :question-data="currentQuestion"/>
             </game-timer>
 
             <!--Messages-->
-            <div class="messages">
+            <div class="messages" v-if="loadingMessage.length > 0 || resultMessage.length > 0">
                 <div v-if="loadingMessage.length > 0"
                      class="text-xs-center light-blue--text text--darken-4"
                      v-text="loadingMessage"></div>
-                <div v-else-if="timerSeconds === 0">
+                <div v-else-if="secondsRemaining === 0">
                     <div class="text-xs-center"
                          v-text="resultMessage"
                          :class="songIsRight || movieIsRight ? 'green--text' : 'red--text'"></div>
@@ -47,25 +54,18 @@
 
             <!--Song Answer Input-->
             <v-autocomplete
+                    class="input-box"
                     v-model="songAnswer"
                     :items="songs"
                     label="What song is this?"
                     prepend-icon="fas fa-music"
-                    :readonly="timerSeconds === 0"
-                    :success="timerSeconds === 0 && songIsRight"
-                    :error="timerSeconds === 0 && ! songIsRight"
+                    :readonly="secondsRemaining === 0"
+                    :success="secondsRemaining === 0 && songIsRight"
+                    :error="secondsRemaining === 0 && ! songIsRight"
             ></v-autocomplete>
 
             <!--Skip to Result-->
-            <v-btn color="light-green darken-1"
-                   @click="playQuestion"
-                   v-if="! gameHasStarted"
-                   outline
-                   round large>
-                Start
-            </v-btn>
-            <v-btn v-else
-                   color="light-blue darken-1"
+            <v-btn color="light-blue darken-1"
                    @click="skipToAnswer"
                    :disabled="!canSkip"
                    outline
@@ -92,7 +92,7 @@
     export default class App extends Vue {
         protected currentQuestion: VideoQuestion = QUESTION_LIST[0];
         protected readonly TIME_PER_QUESTION: number = 10;
-        protected timerSeconds: number = this.TIME_PER_QUESTION;
+        protected secondsRemaining: number = this.TIME_PER_QUESTION;
         protected readonly videoPlayerSize: number = 350;
 
         protected loadingMessage: string = '';
@@ -118,7 +118,7 @@
             // this.currentQuestion = QUESTION_LIST
             // .find((question: VideoQuestion) => question.song === 'Let It Go') || QUESTION_LIST[0];
 
-            this.timerSeconds = this.TIME_PER_QUESTION;
+            this.secondsRemaining = this.TIME_PER_QUESTION;
             this.loadingMessage = 'Loading video...';
             await this.gameVideo.startQuestion(this.currentQuestion);
             this.loadingMessage = '';
@@ -142,32 +142,36 @@
         }
 
         protected skipToAnswer(): void {
-            if (this.timerSeconds > 3) {
-                this.timerSeconds = 3;
+            if (this.secondsRemaining > 3) {
+                this.secondsRemaining = 3;
             }
         }
 
         protected get canSkip(): boolean {
-            return this.timerSeconds > 3 && this.TIME_PER_QUESTION - this.timerSeconds > 3;
+            return this.secondsRemaining > 3 && this.secondsElapsed > 3;
         }
 
-        private get movieIsRight(): boolean {
+        protected get movieIsRight(): boolean {
             return this.movieAnswer === this.currentQuestion.movie;
         }
 
-        private get songIsRight(): boolean {
+        protected get songIsRight(): boolean {
             return this.songAnswer === this.currentQuestion.song;
         }
 
-        private get movies(): string[] {
+        protected get secondsElapsed(): number {
+            return this.TIME_PER_QUESTION - this.secondsRemaining;
+        }
+
+        protected get movies(): string[] {
             return QUESTION_LIST.map((question: VideoQuestion) => question.movie).sort();
         }
 
-        private get songs(): string[] {
+        protected get songs(): string[] {
             return QUESTION_LIST.map((question: VideoQuestion) => question.song).sort();
         }
 
-        private get resultMessage(): string {
+        protected get resultMessage(): string {
             return (this.movieIsRight && this.songIsRight)
                 ? 'Perfect! Well Done!'
                 : this.movieIsRight || this.songIsRight
@@ -192,5 +196,21 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+    }
+
+    .input-box {
+        width: 300px;
+        display: flex;
+        align-items: center;
+    }
+
+    .start-button {
+        height: 230px;
+        width: 230px;
+        font-size: 2rem;
+        background-color: hsla(120, 50%, 30%, 0.9) !important;
+        &:focus {
+            background-color: hsla(170, 70%, 30%, 0.9) !important;
+        }
     }
 </style>
