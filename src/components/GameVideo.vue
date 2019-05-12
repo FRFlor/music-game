@@ -16,7 +16,7 @@
     import {VideoQuestion} from '@/interfaces';
     import {randBetween} from '@/support';
 
-    @Component({ components: {VideoPlayer} })
+    @Component({components: {VideoPlayer}})
     export default class GameVideo extends Vue {
         protected questionData: VideoQuestion | null = null;
         protected videoDuration: number = 0;
@@ -63,7 +63,7 @@
 
             await this.videoPlayer.playVideo();
             this.videoDuration = await this.videoPlayer.getDuration();
-            while(isNaN(this.videoDuration) || this.videoDuration <= 0) {
+            while (isNaN(this.videoDuration) || this.videoDuration <= 0) {
                 this.videoDuration = await this.videoPlayer.getDuration();
                 await this.wait(500);
             }
@@ -105,6 +105,7 @@
     .game-video {
         transition: all 5s ease;
         opacity: 0;
+
         &.revealed {
             opacity: 1;
         }

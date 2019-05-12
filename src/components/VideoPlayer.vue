@@ -14,8 +14,6 @@ import {PlayerState} from '../interfaces';
     import {Component, Vue} from 'vue-property-decorator';
     import {PlayerState, YoutubeAPI} from '../interfaces/YoutubeAPI';
 
-    export {YoutubeAPI};
-
     @Component
     export default class VideoPlayer extends Vue implements YoutubeAPI {
         protected videoId: string = '';
