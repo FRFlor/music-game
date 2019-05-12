@@ -4,8 +4,8 @@
                 class="game-video"
                 :class="{'revealed' : isRevealed}"
                 ref="videoPlayer"/>
-        <button @click="playRandomPoint">Random</button>
-        <button @click="reveal">Reveal</button>
+        <v-btn @click="playRandomPoint">Random</v-btn>
+        <v-btn @click="reveal">Reveal</v-btn>
     </div>
 
 </template>

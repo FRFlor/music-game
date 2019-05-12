@@ -1,5 +1,3 @@
-import {PlayerState} from '../interfaces';
-import {PlayerState} from '../interfaces';
 <template>
     <div>
         <youtube v-if="videoId"

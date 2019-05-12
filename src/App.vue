@@ -1,9 +1,20 @@
 <template>
-    <div id="app">
-        <game-video ref="gameVideo"
-                    :question-data="currentQuestion"/>
-        <button @click="playQuestion">Play playQuestion</button>
-    </div>
+  <div id="app">
+    <v-app id="musicgame">
+      <v-container app fluid class="app-container">
+        <v-layout wrap row>
+          <v-flex>
+            <game-video ref="gameVideo"
+                        :question-data="currentQuestion"/>
+          </v-flex>
+
+          <v-flex>
+            <v-btn @click="playQuestion">Play playQuestion</v-btn>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-app>
+  </div>
 </template>
 
 <script lang="ts">
