@@ -5,15 +5,15 @@
                 :class="{'revealed' : isRevealed}"
                 ref="videoPlayer"/>
         <button @click="playRandomPoint">Random</button>
+        <button @click="reveal">Reveal</button>
     </div>
 
 </template>
 
 <script lang="ts">
-    import {Component, Vue, Prop} from 'vue-property-decorator';
+    import {Component, Vue} from 'vue-property-decorator';
     import VideoPlayer from './VideoPlayer.vue';
     import {VideoQuestion} from '@/interfaces';
-    import {QUESTION_LIST} from '@/storage/questionList';
     import {randBetween} from '@/support';
 
     @Component({ components: {VideoPlayer} })
@@ -29,7 +29,22 @@
 
             await this.playRandomPoint();
             await this.volumeFadeIn();
+        }
+
+        public async reveal(): Promise<void> {
+            if (this.questionData === null) {
+                return;
+            }
+            await this.videoPlayer.setVolume(0);
+            await this.videoPlayer.setPlaybackRate(1);
+            await this.videoPlayer.seekTo(this.questionData.revealPoint, true);
+
             this.isRevealed = true;
+            await this.volumeFadeIn();
+            await this.wait(10000);
+            this.isRevealed = false;
+            await this.volumeFadeOut();
+            await this.wait(5000);
         }
 
         public async playRandomPoint(): Promise<void> {
@@ -40,6 +55,7 @@
         }
 
         protected async prepareQuestionToPlay(questionData: VideoQuestion): Promise<void> {
+            this.isRevealed = false;
             this.questionData = questionData;
             await this.videoPlayer.selectVideo(this.questionData.videoId);
             await this.videoPlayer.setVolume(0);
@@ -87,7 +103,7 @@
 
 <style scoped lang="scss">
     .game-video {
-        transition: all 1s ease;
+        transition: all 5s ease;
         opacity: 0;
         &.revealed {
             opacity: 1;

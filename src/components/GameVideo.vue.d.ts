@@ -7,6 +7,7 @@ export default class GameVideo extends Vue {
     protected readonly PLAY_MARGIN: number;
     protected isRevealed: boolean;
     startQuestion(questionData: VideoQuestion): Promise<void>;
+    reveal(): Promise<void>;
     playRandomPoint(): Promise<void>;
     protected prepareQuestionToPlay(questionData: VideoQuestion): Promise<void>;
     protected volumeFadeIn(): Promise<void>;
