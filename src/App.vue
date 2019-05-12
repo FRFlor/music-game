@@ -87,11 +87,11 @@
         components: {
             GameTimer,
             GameVideo,
-        }
+        },
     })
     export default class App extends Vue {
         protected currentQuestion: VideoQuestion = QUESTION_LIST[0];
-        protected readonly TIME_PER_QUESTION: number = 10;
+        protected readonly TIME_PER_QUESTION: number = 15;
         protected secondsRemaining: number = this.TIME_PER_QUESTION;
         protected readonly videoPlayerSize: number = 350;
 
@@ -135,6 +135,8 @@
             }
 
             await this.gameVideo.reveal();
+
+            await this.playQuestion();
         }
 
         protected get diameterOfTimer(): number {

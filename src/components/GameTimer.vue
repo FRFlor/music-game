@@ -81,6 +81,5 @@
     .game-timer {
         font-size: calc(var(--timer-size) * 0.25);
         font-family: Roboto, sans-serif;
-        font-weight: lighter;
     }
 </style>
