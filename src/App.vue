@@ -216,6 +216,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        overflow: hidden;
         max-width: 450px;
         max-height: 800px;
         background-color: hsla(200, 100%, 95%, 0.9);
