@@ -8,13 +8,15 @@
 </template>
 
 <script lang="ts">
-    import {Component, Vue} from 'vue-property-decorator';
+    import {Component, Vue, Prop, Watch} from 'vue-property-decorator';
     import VideoPlayer from './VideoPlayer.vue';
     import {VideoQuestion} from '@/interfaces';
     import {randBetween} from '@/support';
 
     @Component({components: {VideoPlayer}})
     export default class GameVideo extends Vue {
+        @Prop() size!: number;
+
         protected questionData: VideoQuestion | null = null;
         protected videoDuration: number = 0;
         protected readonly PLAY_MARGIN: number = 30; // Start/End seconds that won't be played during random selection
@@ -26,6 +28,14 @@
 
             await this.playRandomPoint();
             await this.volumeFadeIn();
+        }
+
+        @Watch('size')
+        public async updateVideoSize(): Promise<void> {
+            const desiredHeight: number = this.size;
+            const desiredWidth: number = Math.round(this.size * 4/3);
+            console.log(desiredWidth, desiredHeight);
+            await this.videoPlayer.setSize(desiredWidth, desiredHeight);
         }
 
         public async reveal(): Promise<void> {
@@ -57,7 +67,7 @@
             await this.videoPlayer.selectVideo(this.questionData.videoId);
             await this.videoPlayer.setVolume(0);
             await this.videoPlayer.setPlaybackRate(1);
-            await this.videoPlayer.setSize(280, 210);
+            await this.updateVideoSize();
 
             await this.videoPlayer.playVideo();
             this.videoDuration = await this.videoPlayer.getDuration();
@@ -101,12 +111,12 @@
 
 <style scoped lang="scss">
     .game-video {
+        transition: opacity 5s ease;
         position: absolute;
         transform: translate(-50%, -50%);
         clip-path: circle(30%);
-        transition: opacity 5s ease;
         opacity: 0;
-        height: 210px;
+        height: var(--video-size);
 
         &.revealed {
             opacity: 1;

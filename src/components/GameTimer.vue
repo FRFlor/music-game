@@ -1,6 +1,6 @@
 <template>
     <v-progress-circular :value="progress"
-                         size="165"
+                         :size="size"
                          width="10"
                          class="title"
                          :color="timerColour">
@@ -16,6 +16,7 @@
     @Component
     export default class GameTimer extends Vue {
         @Prop() private value!: number;
+        @Prop() private size!: number;
         @Prop({default: true}) private success!: boolean;
 
         private interval: any;

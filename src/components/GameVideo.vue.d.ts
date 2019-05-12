@@ -2,11 +2,13 @@ import { Vue } from 'vue-property-decorator';
 import VideoPlayer from './VideoPlayer.vue';
 import { VideoQuestion } from '@/interfaces';
 export default class GameVideo extends Vue {
+    size: number;
     protected questionData: VideoQuestion | null;
     protected videoDuration: number;
     protected readonly PLAY_MARGIN: number;
     protected isRevealed: boolean;
     startQuestion(questionData: VideoQuestion): Promise<void>;
+    updateVideoSize(): Promise<void>;
     reveal(): Promise<void>;
     playRandomPoint(): Promise<void>;
     protected prepareQuestionToPlay(questionData: VideoQuestion): Promise<void>;
