@@ -6,6 +6,8 @@ export default class GameTimer extends Vue {
     private interval;
     private startValue;
     private progress;
+    protected onTimerSizeChanged(): void;
+    protected created(): void;
     start(): void;
     stop(): void;
     readonly isPlaying: boolean;

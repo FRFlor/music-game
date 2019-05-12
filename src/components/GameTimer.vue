@@ -2,7 +2,7 @@
     <v-progress-circular :value="progress"
                          :size="size"
                          width="12"
-                         class="title"
+                         class="game-timer"
                          :color="timerColour">
         <slot>
 
@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-    import {Component, Prop, Vue} from 'vue-property-decorator'
+    import {Component, Prop, Vue, Watch} from 'vue-property-decorator'
 
     @Component
     export default class GameTimer extends Vue {
@@ -22,6 +22,15 @@
         private interval: any;
         private startValue: number = 0;
         private progress: number = 100;
+
+        @Watch('size')
+        protected onTimerSizeChanged(): void {
+            document.documentElement.style.setProperty('--timer-size', `${this.size}px`);
+        }
+
+        protected created(): void {
+            this.onTimerSizeChanged();
+        }
 
         public start(): void {
             this.startValue = this.value;
@@ -68,4 +77,8 @@
 </script>
 
 <style lang="scss" scoped>
+    .game-timer {
+        font-size: calc(var(--timer-size) * 0.25);
+        font-family: Roboto, sans-serif;
+    }
 </style>
