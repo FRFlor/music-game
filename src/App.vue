@@ -17,6 +17,12 @@
                     prepend-icon="fas fa-film"
             ></v-autocomplete>
 
+            <div class="text-xs-center"
+                 v-show="secondsRemaining === 0"
+                 :class="messageColourClass">
+                {{currentQuestion.movie}} - {{currentQuestion.song}}
+            </div>
+
             <!--Timer and Video-->
             <game-timer ref="timer"
                         class="my-3"
@@ -37,21 +43,10 @@
             </game-timer>
 
             <!--Messages-->
-            <div class="messages" v-if="loadingMessage.length > 0 || resultMessage.length > 0">
-                <div v-if="loadingMessage.length > 0"
-                     class="text-xs-center light-blue--text text--darken-4"
-                     v-text="loadingMessage"></div>
-                <div v-else-if="secondsRemaining === 0">
-                    <div class="text-xs-center"
-                         v-text="resultMessage"
-                         :class="songIsRight || movieIsRight ? 'green--text' : 'red--text'"></div>
-
-                    <div class="text-xs-center"
-                         :class="songIsRight || movieIsRight ? 'green--text' : 'red--text'">
-                        {{currentQuestion.movie}} - {{currentQuestion.song}}
-                    </div>
-                </div>
-            </div>
+            <div v-show="message.length > 0"
+                 class="text-xs-center"
+                 :class="messageColourClass"
+                 v-text="message"></div>
 
             <!--Song Answer Input-->
             <v-autocomplete
@@ -100,7 +95,10 @@
         protected secondsRemaining: number = this.TIME_PER_QUESTION;
         protected readonly videoPlayerSize: number = 350;
 
-        protected loadingMessage: string = '';
+        protected message: string = `Can you guess the song?
+        Audio will be played at random speeds and random points.
+        You'll have ${this.TIME_PER_QUESTION} seconds to guess!`;
+
         protected gameHasStarted: boolean = false;
 
         protected movieAnswer: string = '';
@@ -121,12 +119,12 @@
             this.getNextQuestion();
 
             await this.gameVideo.startQuestion(this.currentQuestion);
-            this.loadingMessage = '';
+            this.message = '';
             this.timer.start();
         }
 
         protected getNextQuestion(): void {
-            this.loadingMessage = 'Loading Question...';
+            this.message = 'Loading Question...';
 
             this.songAnswer = '';
             this.movieAnswer = '';
@@ -144,13 +142,19 @@
         }
 
         protected async revealAnswer(): Promise<void> {
-            if (this.movieAnswer === this.currentQuestion.movie) {
+            if (this.movieIsRight) {
                 this.playerPoints += 2;
             }
 
-            if (this.songAnswer === this.currentQuestion.song) {
+            if (this.songIsRight) {
                 this.playerPoints += 3;
             }
+
+            this.message = (this.movieIsRight && this.songIsRight)
+                ? 'Perfect! Well Done!'
+                : this.movieIsRight || this.songIsRight
+                    ? 'Good!'
+                    : 'Sorry! Better luck next time!';
 
             await this.gameVideo.reveal();
 
@@ -191,12 +195,12 @@
             return QUESTION_LIST.map((question: VideoQuestion) => question.song).sort();
         }
 
-        protected get resultMessage(): string {
-            return (this.movieIsRight && this.songIsRight)
-                ? 'Perfect! Well Done!'
-                : this.movieIsRight || this.songIsRight
-                    ? 'Good!'
-                    : 'Sorry! Better luck next time!';
+        protected get messageColourClass(): string {
+            if (this.secondsRemaining === 0) {
+                return (this.movieIsRight || this.songIsRight) ? 'green--text text--darken-1' : 'red--text';
+            }
+
+            return 'light-blue--text text--darken-4';
         }
 
         protected get gameVideo(): GameVideo {
