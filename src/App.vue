@@ -124,13 +124,13 @@
         protected getNextQuestion(): void {
             this.loadingMessage = 'Loading Question...';
 
-            this.songAnswer = "";
-            this.movieAnswer = "";
+            this.songAnswer = '';
+            this.movieAnswer = '';
             this.timer.stop();
             this.secondsRemaining = this.TIME_PER_QUESTION;
             let candidate: number = 0;
             do {
-                candidate = Math.floor(Math.random() * QUESTION_LIST.length)
+                candidate = Math.floor(Math.random() * QUESTION_LIST.length);
             } while (this.indexesOfQuestionsUsed.includes(candidate));
             this.indexesOfQuestionsUsed.push(candidate);
             this.currentQuestion = QUESTION_LIST[candidate];
@@ -229,6 +229,7 @@
         width: 230px;
         font-size: 2rem;
         background-color: hsla(120, 50%, 30%, 0.9) !important;
+
         &:focus {
             background-color: hsla(170, 70%, 30%, 0.9) !important;
         }
