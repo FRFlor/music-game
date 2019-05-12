@@ -8,7 +8,6 @@ export default class GameTimer extends Vue {
     private progress;
     start(): void;
     stop(): void;
-    readonly isPlaying: boolean;
     protected readonly timerColour: string;
     protected onTimerSizeChanged(): void;
     protected created(): void;
