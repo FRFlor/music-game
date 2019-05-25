@@ -55,7 +55,8 @@
         }
 
         public async playRandomPoint(): Promise<void> {
-            const playSpeed: number = Math.random() < 0.5 ? 0.25 : 2;
+            const playSpeed: number = Math.random() < 0.5 ? 0.5 : 2;
+            this.$emit('play-speed-selected', playSpeed);
             await this.videoPlayer.setPlaybackRate(playSpeed);
             const randomPoint: number = randBetween(this.PLAY_MARGIN, this.videoDuration - this.PLAY_MARGIN);
             await this.videoPlayer.seekTo(randomPoint, true);

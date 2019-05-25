@@ -39,6 +39,7 @@
                 <div v-show="secondsRemaining > 0 && gameHasStarted" v-text="">{{secondsRemaining}}s</div>
                 <game-video ref="gameVideo"
                             @error="onError"
+                            @play-speed-selected="(speedMultiplier) => message = `Playing at ${speedMultiplier}x speed...`"
                             :size="videoPlayerSize"
                             :question-data="currentQuestion"/>
             </game-timer>
@@ -141,7 +142,6 @@
                 await this.gameVideo.playRandomPoint();
             }, 5000);
 
-            this.message = '';
             setTimeout(() => this.timer.start(), 1500);
         }
 
