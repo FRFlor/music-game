@@ -129,7 +129,7 @@
             this.timer.stop();
             this.secondsRemaining = this.TIME_PER_QUESTION;
 
-            this.getNextQuestion();
+            this.selectNextQuestion();
 
             await this.gameVideo.startQuestion(this.currentQuestion);
 
@@ -145,7 +145,7 @@
             setTimeout(() => this.timer.start(), 1500);
         }
 
-        protected getNextQuestion(): void {
+        protected selectNextQuestion(): void {
             this.indexOfCurrentQuestion = 0;
 
             do {
