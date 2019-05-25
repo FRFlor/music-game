@@ -33,11 +33,12 @@
                 <v-btn fab dark
                        v-if="!gameHasStarted"
                        class="start-button"
-                       @click="playQuestion">
+                       @click="playNextQuestion">
                     Start Game
                 </v-btn>
                 <div v-show="secondsRemaining > 0 && gameHasStarted" v-text="">{{secondsRemaining}}s</div>
                 <game-video ref="gameVideo"
+                            @error="onError"
                             :size="videoPlayerSize"
                             :question-data="currentQuestion"/>
             </game-timer>
@@ -89,11 +90,12 @@
         },
     })
     export default class App extends Vue {
-        protected currentQuestion: VideoQuestion = QUESTION_LIST[0];
+        protected indexOfCurrentQuestion: number = 0;
         protected indexesOfQuestionsUsed: number[] = [];
         protected readonly TIME_PER_QUESTION: number = 25;
         protected secondsRemaining: number = this.TIME_PER_QUESTION;
         protected readonly videoPlayerSize: number = 350;
+        protected randomJumpInterval: any;
 
         protected message: string = `Can you guess the song?
         Audio will be played at random speeds and random points.
@@ -114,34 +116,51 @@
             this.onVideoPlayerSizeChanged();
         }
 
-        protected async playQuestion(): Promise<void> {
-            this.gameHasStarted = true;
-            this.getNextQuestion();
-
-            await this.gameVideo.startQuestion(this.currentQuestion);
-            this.message = '';
-            setTimeout(() => this.timer.start(), 1500);
+        protected async onError(): Promise<void> {
+            await this.playNextQuestion();
         }
 
-        protected getNextQuestion(): void {
+        protected async playNextQuestion(): Promise<void> {
+            this.gameHasStarted = true;
             this.message = 'Loading Question...';
 
             this.songAnswer = '';
             this.movieAnswer = '';
             this.timer.stop();
             this.secondsRemaining = this.TIME_PER_QUESTION;
-            let candidate: number = 0;
+
+            this.getNextQuestion();
+
+            await this.gameVideo.startQuestion(this.currentQuestion);
+
+            if (this.randomJumpInterval) {
+                clearInterval(this.randomJumpInterval);
+            }
+
+            this.randomJumpInterval = setInterval( async () => {
+                await this.gameVideo.playRandomPoint();
+            }, 5000);
+
+            this.message = '';
+            setTimeout(() => this.timer.start(), 1500);
+        }
+
+        protected getNextQuestion(): void {
+            this.indexOfCurrentQuestion = 0;
+
             do {
-                candidate = Math.floor(Math.random() * QUESTION_LIST.length);
-            } while (this.indexesOfQuestionsUsed.includes(candidate));
-            this.indexesOfQuestionsUsed.push(candidate);
-            this.currentQuestion = QUESTION_LIST[candidate];
+                this.indexOfCurrentQuestion = Math.floor(Math.random() * QUESTION_LIST.length);
+            } while (this.indexesOfQuestionsUsed.includes(this.indexOfCurrentQuestion));
+            this.indexesOfQuestionsUsed.push(this.indexOfCurrentQuestion);
+
             if (this.indexesOfQuestionsUsed.length === QUESTION_LIST.length) {
                 this.indexesOfQuestionsUsed = [];
             }
         }
 
         protected async revealAnswer(): Promise<void> {
+            clearInterval(this.randomJumpInterval);
+
             if (this.movieIsRight) {
                 this.playerPoints += 2;
             }
@@ -158,7 +177,7 @@
 
             await this.gameVideo.reveal();
 
-            await this.playQuestion();
+            await this.playNextQuestion();
         }
 
         protected get diameterOfTimer(): number {
@@ -173,6 +192,10 @@
 
         protected get canSkip(): boolean {
             return this.secondsRemaining > 3 && this.secondsElapsed > 3;
+        }
+
+        protected get currentQuestion(): VideoQuestion {
+            return QUESTION_LIST[this.indexOfCurrentQuestion];
         }
 
         protected get movieIsRight(): boolean {
@@ -208,7 +231,7 @@
             return this.$refs.gameVideo;
         }
 
-        private get timer(): GameTimer {
+        protected get timer(): GameTimer {
             // @ts-ignore
             return this.$refs.timer;
         }

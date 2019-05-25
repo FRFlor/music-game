@@ -2,6 +2,7 @@
     <div>
         <video-player
                 class="game-video"
+                @error="$emit('error')"
                 :class="{'revealed' : isRevealed}"
                 ref="videoPlayer"/>
     </div>

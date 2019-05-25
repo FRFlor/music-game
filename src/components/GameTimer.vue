@@ -24,6 +24,7 @@
         private progress: number = 100;
 
         public start(): void {
+            clearInterval(this.interval);
             this.startValue = this.value;
             this.interval = setInterval(() => {
                 if (this.value !== 0) {

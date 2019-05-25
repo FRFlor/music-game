@@ -3,6 +3,7 @@
         <youtube v-if="videoId"
                  :video-id="videoId"
                  @ready="isReady = true"
+                 @error="$emit('error')"
                  @playing="isPlaying = true"
                  ref="youtube"></youtube>
     </div>
